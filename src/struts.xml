@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+<!-- 
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.devMode" value="true" />
+
+    <package name="default" namespace="/" extends="struts-default">
+
+        <default-action-ref name="index" />
+
+        <global-results>
+            <result name="error">/WEB-INF/jsp/error.jsp</result>
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="error"/>
+        </global-exception-mappings>
+
+        <action name="index">
+            <result type="redirectAction">
+                <param name="actionName">HelloWorld</param>
+                <param name="namespace">/example</param>
+            </result>
+        </action>
+    </package>
+ -->
+
+    <!-- Add packages here -->
+    <constant name="struts.devMode" value="true" />
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
+    <constant name="struts.enable.DynamicMethodInvocation" value="true" /> 
+    <!-- 为了调试性能 -->
+      
+    <package name="front" namespace="/" extends="struts-default">
+        <action name="login" class="com.bbs.action.LoginAction">
+            <result name="success">
+                Welcome.jsp
+            </result> 
+            <result name="input">
+        		BBS.jsp
+        	</result>          
+        </action>
+        
+        <action name="logout" class="com.bbs.action.LogoutAction">
+        	<result name="input">
+        		LogoutInfo.jsp
+        	</result>          
+        </action>
+    </package>
+    <package name="server" namespace="/"  extends="struts-default">
+    <!-- 拦截器 -->
+	<!-- 定义拦截器 -->
+		<interceptors>
+			<interceptor name="AuthenticationInterceptor" class="com.bbs.interceptor.AuthenticationInterceptor"/>
+		</interceptors>
+    	<default-action-ref name="FirstPage" />
+    	<global-results>
+            <result name="login">Tologin.jsp</result>
+        </global-results>
+    	<action name="Register" class="com.bbs.action.Register">
+    		<result name="success">Register.jsp</result>
+    	</action>
+    	<action name="FirstPage" class="com.bbs.action.ShowFirstPage" method="ShowMap">
+    		<interceptor-ref name="profiling"/>
+            <interceptor-ref name="defaultStack"/> 
+    		<result name="success">FirstPage.jsp</result>
+    	</action>
+    	<action name="ShowPageTopic" class="com.bbs.action.ShowPageTopic" method="ListTopic">
+    		<result name="success">ShowTopics.jsp</result>
+    	</action>
+    	<action name="AddUserAction" class="com.bbs.action.AddUserAction">
+    		<result name="success">Welcome.jsp</result>
+    		<result name="input">Register.jsp</result>
+    	</action>
+    	<action name="CheckUser" class="com.bbs.action.CheckUser">
+    		<result name="success">Welcome.jsp</result>
+    		<result name="input">Register.jsp</result>
+    	</action>
+    	<action name="PostTopic" class="com.bbs.action.TopicAction">
+    	 	<interceptor-ref name="defaultStack"/> 
+        	<result name="success">
+        		PostTopic.jsp
+        	</result>
+        	<result name="post_success">
+        		MyArticleContent.jsp
+        	</result>          
+        </action>
+    	
+    	<action name="ShowArticle" class="com.bbs.action.ShowArticle">
+    		<result name="success">ShowArticle.jsp</result>
+    	</action>
+    	<action name="ArticleContent" class="com.bbs.action.ArticleContent">
+    		<result name="success">MyArticleContent.jsp</result>
+    	</action>
+    	<action name="Reply" class="com.bbs.action.DoReply">
+    		<interceptor-ref name="defaultStack"/> 
+    		<interceptor-ref name="AuthenticationInterceptor"/>
+    		<result type="redirectAction" name="success">
+    			<param name="actionName">ShowArticle</param>
+    			<param name="method">execute</param>
+    			<param name="TopicId">${TopicId}</param>
+    			<param name="SectionId">${SectionId}</param>
+                <param name="UserName">${UserName}</param>
+    		</result>
+    	</action>
+    </package>
+
+</struts>
